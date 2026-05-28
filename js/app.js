@@ -9,7 +9,7 @@
 
       if (randomFill) {
         for (let x = 0; x < rows; x++) {
-          matrix[y][x] = Math.round(Math.random());
+          matrix[y][x] = Math.round(Math.random() * 4) === 0 ? 1 : 0;
         }
       }
     }
@@ -18,7 +18,7 @@
   }
 
   class World {
-    constructor(canvas, cellSize = 20, interval = 250) {
+    constructor(canvas, cellSize = 20, interval = 500) {
       this.canvas = canvas;
       this.context = this.canvas.getContext("2d");
       this.cellSize = cellSize;
@@ -67,14 +67,14 @@
       this.data = next;
 
       // clear canvas
-      this.context.fillStyle = "white";
+      this.context.fillStyle = "#fafafa";
       this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
       for (let y = 0; y < this.cols; y++) {
         for (let x = 0; x < this.rows; x++) {
           // draw the cell if it is alive
           if (this.data[y][x]) {
-            this.context.fillStyle = ["pink", "cyan", "yellow"][
+            this.context.fillStyle = ["#fde", "#8ff", "#ff8"][
               Math.round(Math.random() * 2)
             ];
 
@@ -91,8 +91,8 @@
   }
 
   const canvas = document.querySelector("canvas");
-  canvas.height = innerHeight;
-  canvas.width = innerWidth;
+  canvas.height = document.documentElement.scrollHeight;
+  canvas.width = document.documentElement.scrollWidth;
 
   const world = new World(canvas);
 })();
