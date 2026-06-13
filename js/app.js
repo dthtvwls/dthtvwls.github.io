@@ -1,5 +1,11 @@
 "use strict";
 
+function error(msg) {
+  if (typeof console !== "undefined" && console.error) {
+    console.error("[World]", msg);
+  }
+}
+
 function wrap(value, max) {
   return (value + max) % max;
 }
@@ -26,15 +32,20 @@ class World {
   constructor(canvas, cellSize = 20, interval = 500) {
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d");
+    if (!this.context) {
+      throw new Error("Could not get 2D rendering context from canvas");
+    }
     this.cellSize = cellSize;
     this.cols = Math.ceil(canvas.height / this.cellSize);
     this.rows = Math.ceil(canvas.width / this.cellSize);
     this.data = Matrix(this.cols, this.rows, true);
 
     canvas.addEventListener("mousemove", (e) => {
-      this.data[Math.floor((e.pageY - canvas.offsetTop) / this.cellSize)][
-        Math.floor((e.pageX - canvas.offsetLeft) / this.cellSize)
-      ] = 1;
+      const y = Math.floor((e.pageY - canvas.offsetTop) / this.cellSize);
+      const x = Math.floor((e.pageX - canvas.offsetLeft) / this.cellSize);
+      if (y >= 0 && y < this.cols && x >= 0 && x < this.rows && this.data[y]) {
+        this.data[y][x] = 1;
+      }
     });
 
     this.step();
@@ -108,10 +119,17 @@ if (typeof module !== "undefined" && module.exports) {
   module.exports = { Matrix, World, wrap, CELL_COLORS };
 } else {
   (function () {
-    const canvas = document.querySelector("canvas");
-    canvas.height = document.documentElement.scrollHeight;
-    canvas.width = document.documentElement.scrollWidth;
+    try {
+      const canvas = document.querySelector("canvas");
+      if (!canvas) {
+        throw new Error("No <canvas> element found in the document");
+      }
+      canvas.height = document.documentElement.scrollHeight;
+      canvas.width = document.documentElement.scrollWidth;
 
-    const world = new World(canvas);
+      const world = new World(canvas);
+    } catch (e) {
+      error(e.message || e);
+    }
   })();
 }
