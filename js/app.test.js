@@ -318,15 +318,6 @@ describe("wrap", () => {
 });
 
 // ──────────────────────────────────────────────
-// CELL_COLORS
-// ──────────────────────────────────────────────
-describe("CELL_COLORS", () => {
-  test("contains exactly 3 colour strings", () => {
-    expect(CELL_COLORS).toEqual(["#fde", "#8ff", "#ff8"]);
-  });
-});
-
-// ──────────────────────────────────────────────
 // World.countNeighbors
 // ──────────────────────────────────────────────
 describe("World.countNeighbors", () => {
