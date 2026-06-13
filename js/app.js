@@ -9,7 +9,7 @@
 
       if (randomFill) {
         for (let x = 0; x < rows; x++) {
-          matrix[y][x] = Math.round(Math.random() * 4) === 0 ? 1 : 0;
+          matrix[y][x] = Math.floor(Math.random() * 5) === 0 ? 1 : 0;
         }
       }
     }
@@ -27,9 +27,11 @@
       this.data = Matrix(this.cols, this.rows, true);
 
       canvas.addEventListener("mousemove", (e) => {
-        this.data[Math.floor((e.pageY - canvas.offsetTop) / this.cellSize)][
-          Math.floor((e.pageX - canvas.offsetLeft) / this.cellSize)
-        ] = 1;
+        const row = Math.floor((e.pageY - canvas.offsetTop) / this.cellSize);
+        const col = Math.floor((e.pageX - canvas.offsetLeft) / this.cellSize);
+        if (row >= 0 && row < this.cols && col >= 0 && col < this.rows) {
+          this.data[row][col] = 1;
+        }
       });
 
       this.step();
@@ -52,7 +54,7 @@
         this.data[s][x] +
         this.data[s][e];
 
-      return total === 3 || (total === 2 && this.data[y][x]);
+      return total === 3 || (total === 2 && this.data[y][x]) ? 1 : 0;
     }
 
     step() {
@@ -75,7 +77,7 @@
           // draw the cell if it is alive
           if (this.data[y][x]) {
             this.context.fillStyle = ["#fde", "#8ff", "#ff8"][
-              Math.round(Math.random() * 2)
+              Math.floor(Math.random() * 3)
             ];
 
             this.context.fillRect(
