@@ -1,6 +1,10 @@
 (function () {
   "use strict";
 
+  function wrap(value, max) {
+    return (value + max) % max;
+  }
+
   function Matrix(cols, rows, randomFill = false) {
     const matrix = Array(cols);
 
@@ -16,6 +20,8 @@
 
     return matrix;
   }
+
+  const CELL_COLORS = ["#fde", "#8ff", "#ff8"];
 
   class World {
     constructor(canvas, cellSize = 20, interval = 500) {
@@ -36,13 +42,21 @@
       setInterval(this.step.bind(this), interval);
     }
 
-    isCellAlive(y, x) {
-      let n = y > 0 ? y - 1 : this.cols - 1,
-        s = y < this.cols - 1 ? y + 1 : 0,
-        w = x > 0 ? x - 1 : this.rows - 1,
-        e = x < this.rows - 1 ? x + 1 : 0;
+    forEachCell(callback) {
+      for (let y = 0; y < this.cols; y++) {
+        for (let x = 0; x < this.rows; x++) {
+          callback(y, x);
+        }
+      }
+    }
 
-      let total =
+    countNeighbors(y, x) {
+      const n = wrap(y - 1, this.cols),
+        s = wrap(y + 1, this.cols),
+        w = wrap(x - 1, this.rows),
+        e = wrap(x + 1, this.rows);
+
+      return (
         this.data[n][w] +
         this.data[n][x] +
         this.data[n][e] +
@@ -50,19 +64,32 @@
         this.data[y][e] +
         this.data[s][w] +
         this.data[s][x] +
-        this.data[s][e];
+        this.data[s][e]
+      );
+    }
 
+    isCellAlive(y, x) {
+      const total = this.countNeighbors(y, x);
       return total === 3 || (total === 2 && this.data[y][x]);
+    }
+
+    drawCell(y, x) {
+      this.context.fillStyle =
+        CELL_COLORS[Math.round(Math.random() * (CELL_COLORS.length - 1))];
+      this.context.fillRect(
+        x * this.cellSize,
+        y * this.cellSize,
+        this.cellSize,
+        this.cellSize,
+      );
     }
 
     step() {
       const next = Matrix(this.cols, this.rows);
 
-      for (let y = 0; y < this.cols; y++) {
-        for (let x = 0; x < this.rows; x++) {
-          next[y][x] = this.isCellAlive(y, x);
-        }
-      }
+      this.forEachCell((y, x) => {
+        next[y][x] = this.isCellAlive(y, x);
+      });
 
       this.data = next;
 
@@ -70,23 +97,11 @@
       this.context.fillStyle = "#fafafa";
       this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-      for (let y = 0; y < this.cols; y++) {
-        for (let x = 0; x < this.rows; x++) {
-          // draw the cell if it is alive
-          if (this.data[y][x]) {
-            this.context.fillStyle = ["#fde", "#8ff", "#ff8"][
-              Math.round(Math.random() * 2)
-            ];
-
-            this.context.fillRect(
-              x * this.cellSize,
-              y * this.cellSize,
-              this.cellSize,
-              this.cellSize,
-            );
-          }
+      this.forEachCell((y, x) => {
+        if (this.data[y][x]) {
+          this.drawCell(y, x);
         }
-      }
+      });
     }
   }
 
