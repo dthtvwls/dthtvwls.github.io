@@ -1,11 +1,5 @@
 "use strict";
 
-function error(msg) {
-  if (typeof console !== "undefined" && console.error) {
-    console.error("[World]", msg);
-  }
-}
-
 function wrap(value, max) {
   return (value + max) % max;
 }
@@ -129,7 +123,7 @@ if (typeof module !== "undefined" && module.exports) {
 
       const world = new World(canvas);
     } catch (e) {
-      error(e.message || e);
+      console.error(e);
     }
   })();
 }
