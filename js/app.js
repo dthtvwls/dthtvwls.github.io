@@ -74,7 +74,7 @@ class World {
 
   isCellAlive(y, x) {
     const total = this.countNeighbors(y, x);
-    return total === 3 || (total === 2 && this.data[y][x]) ? 1 : 0;
+    return total === 3 || (total === 2 && this.data[y][x]);
   }
 
   drawCell(y, x) {
