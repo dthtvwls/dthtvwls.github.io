@@ -12,7 +12,7 @@ function Matrix(cols, rows, randomFill = false) {
 
     if (randomFill) {
       for (let x = 0; x < rows; x++) {
-        matrix[y][x] = Math.round(Math.random() * 4) === 0 ? 1 : 0;
+        matrix[y][x] = Math.floor(Math.random() * 5) === 0 ? 1 : 0;
       }
     }
   }
@@ -79,7 +79,7 @@ class World {
 
   drawCell(y, x) {
     this.context.fillStyle =
-      CELL_COLORS[Math.round(Math.random() * (CELL_COLORS.length - 1))];
+      CELL_COLORS[Math.floor(Math.random() * CELL_COLORS.length)];
     this.context.fillRect(
       x * this.cellSize,
       y * this.cellSize,
